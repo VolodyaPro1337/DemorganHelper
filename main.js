@@ -133,15 +133,19 @@ function registerShortcuts() {
         }
     });
 
-    globalShortcut.register(config.hotkeys.timer1, () => {
-        mainWindow && mainWindow.webContents.send('trigger-timer', 1);
-    });
-    globalShortcut.register(config.hotkeys.timer2, () => {
-        mainWindow && mainWindow.webContents.send('trigger-timer', 2);
-    });
-    globalShortcut.register(config.hotkeys.timer3, () => {
-        mainWindow && mainWindow.webContents.send('trigger-timer', 3);
-    });
+    if (config.timers && Array.isArray(config.timers)) {
+        config.timers.forEach(timer => {
+            if (timer.hotkey) {
+                try {
+                    globalShortcut.register(timer.hotkey, () => {
+                        mainWindow && mainWindow.webContents.send('trigger-timer', timer.id);
+                    });
+                } catch (e) {
+                    console.error(`Failed to register hotkey ${timer.hotkey} for timer ${timer.id}`);
+                }
+            }
+        });
+    }
 }
 
 app.on('window-all-closed', () => {

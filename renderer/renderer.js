@@ -1,6 +1,10 @@
-let settings = {};
-let timers = {};
-const TIMER_DEFS = window.electronAPI.TIMERS;
+// Generate UUID for new timers
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
 
 const appEl = document.getElementById('app');
 const timersContainer = document.getElementById('timers-container');
@@ -22,11 +26,16 @@ const infoPanel = document.getElementById('info-panel');
 
 const hotkeyInputs = {
     toggleClickThrough: document.getElementById('hotkey-ct'),
-    toggleVisibility: document.getElementById('hotkey-vis'),
-    timer1: document.getElementById('hotkey-t1'),
-    timer2: document.getElementById('hotkey-t2'),
-    timer3: document.getElementById('hotkey-t3')
+    toggleVisibility: document.getElementById('hotkey-vis')
 };
+
+// New Timer Form Elements
+const timersListEl = document.getElementById('timers-settings-list');
+const newTimerName = document.getElementById('new-timer-name');
+const newTimerDuration = document.getElementById('new-timer-duration');
+const newTimerHint = document.getElementById('new-timer-hint');
+const newTimerHotkey = document.getElementById('new-timer-hotkey');
+const addTimerBtn = document.getElementById('add-timer-btn');
 
 async function init() {
     try {
@@ -57,9 +66,6 @@ async function init() {
             }
         });
 
-        if (!opacitySlider || !saveBtn) {
-        }
-
         settingsBtn.addEventListener('click', () => {
             populateSettingsUI();
             settingsModal.classList.remove('hidden');
@@ -78,12 +84,13 @@ async function init() {
                 compactMode: compactToggle.checked,
                 showInfo: infoToggle.checked,
 
+                // Preserve existing timers array which is modified in real-time in the UI
+                timers: settings.timers,
+
                 hotkeys: {
                     toggleClickThrough: hotkeyInputs.toggleClickThrough.value,
-                    toggleVisibility: hotkeyInputs.toggleVisibility.value,
-                    timer1: hotkeyInputs.timer1.value,
-                    timer2: hotkeyInputs.timer2.value,
-                    timer3: hotkeyInputs.timer3.value
+                    toggleVisibility: hotkeyInputs.toggleVisibility.value
+                    // Timer hotkeys are now stored in the timers array
                 }
             };
 
@@ -93,32 +100,38 @@ async function init() {
             settingsModal.classList.add('hidden');
         });
 
-        Object.values(hotkeyInputs).forEach(input => {
-            if (!input) return;
-            input.addEventListener('keydown', (e) => {
-                e.preventDefault();
-                const keys = [];
-                if (e.metaKey) keys.push('Command');
-                if (e.ctrlKey) keys.push('Ctrl');
-                if (e.altKey) keys.push('Alt');
-                if (e.shiftKey) keys.push('Shift');
+        setupHotkeyInput(hotkeyInputs.toggleClickThrough);
+        setupHotkeyInput(hotkeyInputs.toggleVisibility);
+        setupHotkeyInput(newTimerHotkey);
 
-                if (['Control', 'Alt', 'Shift', 'Meta'].includes(e.key)) return;
-
-                let key = e.key.toUpperCase();
-                if (key === ' ') key = 'Space';
-
-                keys.push(key);
-                input.value = keys.join('+');
-            });
-
-            input.addEventListener('focus', () => input.classList.add('recording'));
-            input.addEventListener('blur', () => input.classList.remove('recording'));
-        });
+        addTimerBtn.addEventListener('click', addNewTimer);
 
     } catch (err) {
         alert('Error: ' + err.message);
     }
+}
+
+function setupHotkeyInput(input) {
+    if (!input) return;
+    input.addEventListener('keydown', (e) => {
+        e.preventDefault();
+        const keys = [];
+        if (e.metaKey) keys.push('Command');
+        if (e.ctrlKey) keys.push('Ctrl');
+        if (e.altKey) keys.push('Alt');
+        if (e.shiftKey) keys.push('Shift');
+
+        if (['Control', 'Alt', 'Shift', 'Meta'].includes(e.key)) return;
+
+        let key = e.key.toUpperCase();
+        if (key === ' ') key = 'Space';
+
+        keys.push(key);
+        input.value = keys.join('+');
+    });
+
+    input.addEventListener('focus', () => input.classList.add('recording'));
+    input.addEventListener('blur', () => input.classList.remove('recording'));
 }
 
 function populateSettingsUI() {
@@ -132,9 +145,63 @@ function populateSettingsUI() {
 
     hotkeyInputs.toggleClickThrough.value = settings.hotkeys.toggleClickThrough;
     hotkeyInputs.toggleVisibility.value = settings.hotkeys.toggleVisibility;
-    hotkeyInputs.timer1.value = settings.hotkeys.timer1;
-    hotkeyInputs.timer2.value = settings.hotkeys.timer2;
-    hotkeyInputs.timer3.value = settings.hotkeys.timer3;
+
+    renderTimersList();
+}
+
+function renderTimersList() {
+    if (!settings.timers) settings.timers = [];
+    timersListEl.innerHTML = '';
+
+    settings.timers.forEach((timer, index) => {
+        const item = document.createElement('div');
+        item.className = 'timer-setting-item';
+        item.innerHTML = `
+            <div class="timer-setting-info">
+                <span class="timer-setting-name">${timer.name} (${timer.duration}s)</span>
+                <span class="timer-setting-details">Key: ${timer.hotkey} | Hint: ${timer.hint || '-'}</span>
+            </div>
+            <button class="delete-timer-btn" data-index="${index}">Delete</button>
+        `;
+        timersListEl.appendChild(item);
+    });
+
+    // Add event listeners for delete buttons
+    document.querySelectorAll('.delete-timer-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const index = parseInt(e.target.dataset.index);
+            settings.timers.splice(index, 1);
+            renderTimersList();
+        });
+    });
+}
+
+function addNewTimer() {
+    const name = newTimerName.value.trim();
+    const duration = parseInt(newTimerDuration.value);
+    const hotkey = newTimerHotkey.value.trim();
+    const hint = newTimerHint.value.trim();
+
+    if (!name || !duration || !hotkey) {
+        alert('Please fill in Name, Duration and Hotkey');
+        return;
+    }
+
+    settings.timers.push({
+        id: generateUUID(),
+        name,
+        duration,
+        hint,
+        hotkey
+    });
+
+    // Clear form
+    newTimerName.value = '';
+    newTimerDuration.value = '';
+    newTimerHint.value = '';
+    newTimerHotkey.value = '';
+
+    renderTimersList();
 }
 
 function applySettings() {
@@ -213,27 +280,31 @@ function updateInfoPanel() {
     if (!grid) return;
 
     const hotkeys = settings.hotkeys;
-    const displayMap = {
-        'timer1': 'Toilet',
-        'timer2': 'Floor',
-        'timer3': 'Sweep',
-        'toggleClickThrough': 'Click-Through',
-        'toggleVisibility': 'Show/Hide'
-    };
 
     let html = '';
-    const order = ['timer1', 'timer2', 'timer3', 'toggleClickThrough', 'toggleVisibility'];
 
-    order.forEach(key => {
-        if (hotkeys[key]) {
-            html += `<span>${hotkeys[key]}: ${displayMap[key]}</span>`;
-        }
-    });
+    // Configured Timers
+    if (settings.timers) {
+        settings.timers.forEach(timer => {
+            html += `<span>${timer.hotkey}: ${timer.name}</span>`;
+        });
+    }
+
+    // Static Global Hotkeys
+    if (hotkeys.toggleClickThrough) html += `<span>${hotkeys.toggleClickThrough}: Click-Through</span>`;
+    if (hotkeys.toggleVisibility) html += `<span>${hotkeys.toggleVisibility}: Hide/Show</span>`;
 
     grid.innerHTML = html;
 }
 
 function startTimer(id) {
+    // Look up timer in settings.timers
+    const def = settings.timers.find(t => t.id === id || String(t.id) === String(id));
+    if (!def) {
+        console.error('Timer not found for id:', id);
+        return;
+    }
+
     // If timer exists, remove it first (restart behavior)
     if (timers[id]) {
         clearInterval(timers[id].interval);
@@ -241,7 +312,6 @@ function startTimer(id) {
         delete timers[id];
     }
 
-    const def = TIMER_DEFS[id];
     const el = document.createElement('div');
     el.className = 'timer green';
     el.dataset.id = id;
@@ -252,7 +322,7 @@ function startTimer(id) {
                 <span>${def.name}</span>
                 <button class="close-timer" title="Remove">×</button>
             </div>
-            <span class="hint">${def.hint}</span>
+            <span class="hint">${def.hint || ''}</span>
             <span class="time">${def.duration}s</span>
         </div>
         <div class="progress-bar" style="width: 100%;"></div>

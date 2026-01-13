@@ -13,11 +13,13 @@ class ConfigManager {
             showInfo: true,
             hotkeys: {
                 toggleClickThrough: 'Alt+X',
-                toggleVisibility: 'Alt+V',
-                timer1: 'Alt+1',
-                timer2: 'Alt+2',
-                timer3: 'Alt+3'
+                toggleVisibility: 'Alt+V'
             },
+            timers: [
+                { id: '1', name: 'Toilet', duration: 35, hint: 'Toilet Cubicles', hotkey: 'Alt+1' },
+                { id: '2', name: 'Floor', duration: 55, hint: 'Mop in hallway', hotkey: 'Alt+2' },
+                { id: '3', name: 'Sweep', duration: 75, hint: 'Broom outside', hotkey: 'Alt+3' }
+            ],
             windowBounds: { x: undefined, y: undefined, width: 450, height: 500 }
         };
         this.config = { ...this.defaults };
@@ -38,8 +40,19 @@ class ConfigManager {
                     this.config.hotkeys = this.defaults.hotkeys;
                 }
 
+                // Migration: Convert legacy timer hotkeys to new timers array if timers array is missing
+                if (!parsed.timers && parsed.hotkeys && this.defaults.timers) {
+                    this.config.timers = [
+                        { id: '1', name: 'Toilet', duration: 35, hint: 'Toilet Cubicles', hotkey: parsed.hotkeys.timer1 || 'Alt+1' },
+                        { id: '2', name: 'Floor', duration: 55, hint: 'Mop in hallway', hotkey: parsed.hotkeys.timer2 || 'Alt+2' },
+                        { id: '3', name: 'Sweep', duration: 75, hint: 'Broom outside', hotkey: parsed.hotkeys.timer3 || 'Alt+3' }
+                    ];
+                } else {
+                    this.config.timers = parsed.timers || this.defaults.timers;
+                }
+
                 // Merge other properties safely, ensuring hotkeys are not overwritten by a shallow merge
-                this.config = { ...this.defaults, ...parsed, hotkeys: this.config.hotkeys };
+                this.config = { ...this.defaults, ...parsed, hotkeys: this.config.hotkeys, timers: this.config.timers };
             }
         } catch (e) {
             console.error('Failed to load config:', e);

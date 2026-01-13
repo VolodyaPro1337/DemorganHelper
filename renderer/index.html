@@ -75,18 +75,25 @@
                 <input type="text" id="hotkey-vis" readonly class="hotkey-input">
             </div>
 
-            <h4>Timers</h4>
-            <div class="setting-group">
-                <label>Toilet (35s)</label>
-                <input type="text" id="hotkey-t1" readonly class="hotkey-input">
+            <h3>Timers</h3>
+            <div id="timers-settings-list" class="timers-list-container">
+                <!-- Timers will be populated here -->
             </div>
-            <div class="setting-group">
-                <label>Floor Wash (55s)</label>
-                <input type="text" id="hotkey-t2" readonly class="hotkey-input">
-            </div>
-            <div class="setting-group">
-                <label>Sweeping (75s)</label>
-                <input type="text" id="hotkey-t3" readonly class="hotkey-input">
+
+            <div class="add-timer-form">
+                <h4>Add New Timer</h4>
+                <div class="form-row">
+                    <input type="text" id="new-timer-name" placeholder="Name (e.g. Pills)" class="input-text">
+                    <input type="number" id="new-timer-duration" placeholder="Sec" class="input-number" min="1">
+                </div>
+                <div class="form-row">
+                    <input type="text" id="new-timer-hint" placeholder="Hint (optional)" class="input-text">
+                </div>
+                <div class="form-row">
+                    <input type="text" id="new-timer-hotkey" placeholder="Click to record Hotkey" readonly
+                        class="hotkey-input" style="width: 100%">
+                </div>
+                <button id="add-timer-btn" class="add-btn">Add Timer</button>
             </div>
         </div>
         <div class="settings-footer">
