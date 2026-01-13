@@ -45,6 +45,7 @@ async function init() {
 
         window.electronAPI.onTriggerTimer((id) => {
             console.log('Renderer received trigger-timer event for id:', id);
+            // alert('Renderer received signal for ID: ' + id);
             startTimer(id);
         });
 
@@ -303,14 +304,16 @@ function updateInfoPanel() {
 
 function startTimer(id) {
     // Look up timer in settings.timers
-    console.log('startTimer called with id:', id);
-    console.log('Current settings.timers:', settings.timers);
+    // console.log('startTimer called with id:', id);
+    // console.log('Current settings.timers:', settings.timers);
 
     const def = settings.timers.find(t => t.id === id || String(t.id) === String(id));
     if (!def) {
+        alert('Timer NOT FOUND for id: ' + id);
         console.error('Timer not found for id:', id);
         return;
     }
+    // alert('Starting timer: ' + def.name);
 
     // If timer exists, remove it first (restart behavior)
     if (timers[id]) {
