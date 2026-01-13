@@ -146,6 +146,7 @@ function applySettings() {
             '--text-color': '#fff',
             '--border-color': 'rgba(255, 255, 255, 0.1)',
             '--button-bg': 'rgba(255, 255, 255, 0.1)',
+            '--modal-bg': 'rgba(20, 20, 20, 0.98)',
             '--timer-green': '#4caf50',
             '--timer-yellow': '#ff9800',
             '--timer-red': '#f44336'
@@ -155,6 +156,7 @@ function applySettings() {
             '--text-color': '#e3f2fd',
             '--border-color': 'rgba(33, 150, 243, 0.3)',
             '--button-bg': 'rgba(33, 150, 243, 0.2)',
+            '--modal-bg': 'rgba(10, 20, 35, 0.98)',
             '--timer-green': '#2196f3',
             '--timer-yellow': '#03a9f4',
             '--timer-red': '#00bcd4'
@@ -164,6 +166,7 @@ function applySettings() {
             '--text-color': '#f3e5f5',
             '--border-color': 'rgba(156, 39, 176, 0.3)',
             '--button-bg': 'rgba(156, 39, 176, 0.2)',
+            '--modal-bg': 'rgba(25, 10, 35, 0.98)',
             '--timer-green': '#9c27b0',
             '--timer-yellow': '#ba68c8',
             '--timer-red': '#e1bee7'
@@ -173,6 +176,7 @@ function applySettings() {
             '--text-color': '#fff',
             '--border-color': '#39ff14',
             '--button-bg': 'rgba(57, 255, 20, 0.15)',
+            '--modal-bg': 'rgba(0, 0, 0, 0.95)',
             '--timer-green': '#39ff14',
             '--timer-yellow': '#ff00ff',
             '--timer-red': '#00ffff'
