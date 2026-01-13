@@ -1,0 +1,35 @@
+{
+  "name": "dmghelper",
+  "version": "1.0.0",
+  "description": "Overlay helper for Majestic RP",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "test": "jest",
+    "dist": "electron-builder -w"
+  },
+  "build": {
+    "appId": "com.dmghelper.app",
+    "productName": "DemorganHelper",
+    "win": {
+      "target": "portable"
+    },
+    "portable": {
+      "artifactName": "DemorganHelper.exe"
+    },
+    "icon": "icon.png",
+    "directories": {
+      "output": "dist"
+    }
+  },
+  "keywords": [],
+  "author": "VolodyaPro1337",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^39.2.7",
+    "electron-builder": "^26.4.0",
+    "jest": "^30.2.0"
+  }
+}

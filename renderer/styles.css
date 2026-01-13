@@ -1,0 +1,305 @@
+:root {
+    --bg-color: rgba(0, 0, 0, 0.7);
+    --text-color: #fff;
+    --scale: 1;
+
+
+    --timer-green: #4caf50;
+    --timer-yellow: #ff9800;
+    --timer-red: #f44336;
+}
+
+
+
+
+body {
+    background-color: transparent;
+    color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0;
+    padding: 10px;
+    overflow: hidden;
+    user-select: none;
+    transition: transform 0.2s;
+    transform: scale(var(--scale));
+    transform-origin: top left;
+}
+
+
+.compact .timer {
+    padding: 2px;
+    height: 10px;
+    margin-bottom: 5px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.compact .timer span,
+.compact .timer .hint {
+    display: none !important;
+}
+
+.compact .progress-bar {
+    height: 100%;
+}
+
+
+.info-panel {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.5);
+    background: transparent;
+    pointer-events: none;
+}
+
+.info-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+    opacity: 0.8;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px 8px;
+}
+
+.info-panel.hidden {
+    display: none;
+}
+
+body.draggable {
+    -webkit-app-region: drag;
+}
+
+#app {
+    background: var(--bg-color);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 5px;
+    transition: opacity 0.3s, border 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#app.click-through {
+    border-color: rgba(255, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #00ff88;
+    margin-right: 5px;
+}
+
+.click-through .status-dot {
+    background-color: #ff4444;
+}
+
+.drag-handle {
+    flex-grow: 1;
+    text-align: center;
+    cursor: default;
+    font-weight: bold;
+}
+
+#settings-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+}
+
+#settings-btn:hover {
+    opacity: 1;
+}
+
+.timer {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 5px 8px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.timer .progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: currentColor;
+    width: 100%;
+    transition: width 1s linear;
+}
+
+.timer.green {
+    color: var(--timer-green);
+}
+
+.timer.yellow {
+    color: #ffcc00;
+}
+
+.timer.red {
+    color: #ff4444;
+}
+
+.finish-pulse {
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+.hidden {
+    display: none !important;
+}
+
+#settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(20, 20, 20, 0.98);
+    z-index: 100;
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    overflow-y: auto;
+}
+
+.settings-content {
+    flex-grow: 1;
+}
+
+.setting-group {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.hotkey-input {
+    background: #333;
+    border: 1px solid #555;
+    color: white;
+    padding: 3px 6px;
+    border-radius: 4px;
+    width: 80px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.hotkey-input:focus {
+    border-color: #00ff88;
+    outline: none;
+}
+
+.recording {
+    background: #550000;
+    border-color: #ff4444;
+}
+
+h4 {
+    margin: 10px 0 5px 0;
+    color: #ccc;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #444;
+}
+
+.settings-footer {
+    margin-top: 10px;
+    text-align: right;
+}
+
+button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(5px);
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+#settings-btn {
+    font-size: 1.2rem;
+    padding: 4px 8px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+#settings-btn:hover {
+    opacity: 1;
+    transform: rotate(90deg);
+}
+
+#save-settings {
+    background: linear-gradient(45deg, #00ff88, #00b862);
+    color: #000;
+    border: none;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+}
+
+#save-settings:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+}
+
+#cancel-settings {
+    background: rgba(100, 100, 100, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#cancel-settings:hover {
+    background: rgba(100, 100, 100, 0.5);
+}
