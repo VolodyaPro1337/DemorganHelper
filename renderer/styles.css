@@ -8,6 +8,10 @@
     --scale: 1;
 }
 
+* {
+    box-sizing: border-box;
+}
+
 body {
     background-color: transparent;
     color: var(--text-color);
@@ -19,6 +23,10 @@ body {
     transition: transform 0.2s;
     transform: scale(var(--scale));
     transform-origin: top left;
+
+    /* Lock layout dimensions to match base size in renderer.js */
+    width: 450px;
+    height: 500px;
 }
 
 .compact .timer {
