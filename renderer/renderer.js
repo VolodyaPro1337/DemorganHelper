@@ -1,5 +1,6 @@
 // Generate UUID for new timers
 let timers = {}; // Restore timers variable
+let settings = {}; // Declare settings variable
 function generateUUID() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
