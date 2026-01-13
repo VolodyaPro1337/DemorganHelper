@@ -40,9 +40,13 @@ const addTimerBtn = document.getElementById('add-timer-btn');
 async function init() {
     try {
         settings = await window.electronAPI.loadSettings();
+        console.log('Settings loaded in init:', settings);
         applySettings();
 
-        window.electronAPI.onTriggerTimer(startTimer);
+        window.electronAPI.onTriggerTimer((id) => {
+            console.log('Renderer received trigger-timer event for id:', id);
+            startTimer(id);
+        });
 
         window.electronAPI.onClickThroughState((isClickThrough) => {
             if (isClickThrough) {
@@ -299,6 +303,9 @@ function updateInfoPanel() {
 
 function startTimer(id) {
     // Look up timer in settings.timers
+    console.log('startTimer called with id:', id);
+    console.log('Current settings.timers:', settings.timers);
+
     const def = settings.timers.find(t => t.id === id || String(t.id) === String(id));
     if (!def) {
         console.error('Timer not found for id:', id);
