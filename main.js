@@ -49,9 +49,9 @@ function createWindow() {
     const bounds = config.windowBounds || { x: undefined, y: undefined };
 
     mainWindow = new BrowserWindow({
-        width: 400,
-        height: 500,
-        x: bounds.x || width - 400,
+        width: bounds.width || 500,
+        height: bounds.height || 600,
+        x: bounds.x || width - 500,
         y: bounds.y || 50,
         frame: false,
         transparent: true,
@@ -76,12 +76,15 @@ function createWindow() {
 
     setClickThrough(false);
 
-    mainWindow.on('moved', () => {
+    const saveBounds = () => {
         if (mainWindow) {
-            const [x, y] = mainWindow.getPosition();
-            configManager.save({ windowPosition: { x, y } });
+            const bounds = mainWindow.getBounds();
+            configManager.save({ windowBounds: bounds });
         }
-    });
+    };
+
+    mainWindow.on('moved', saveBounds);
+    mainWindow.on('resized', saveBounds);
 
     mainWindow.on('closed', () => {
         mainWindow = null;

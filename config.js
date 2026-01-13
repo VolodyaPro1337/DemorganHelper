@@ -18,7 +18,7 @@ class ConfigManager {
                 timer2: 'Alt+2',
                 timer3: 'Alt+3'
             },
-            windowBounds: { x: undefined, y: undefined, width: 300, height: 400 }
+            windowBounds: { x: undefined, y: undefined, width: 500, height: 600 }
         };
         this.config = { ...this.defaults };
     }
