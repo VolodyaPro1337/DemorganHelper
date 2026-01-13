@@ -201,7 +201,7 @@ function applySettings() {
     updateInfoPanel();
 
     // Adaptive resizing based on scale
-    const baseWidth = 400;
+    const baseWidth = 450;
     const baseHeight = 500;
     const newWidth = baseWidth * settings.scale;
     const newHeight = baseHeight * settings.scale;

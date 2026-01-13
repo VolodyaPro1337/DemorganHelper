@@ -18,7 +18,7 @@ class ConfigManager {
                 timer2: 'Alt+2',
                 timer3: 'Alt+3'
             },
-            windowBounds: { x: undefined, y: undefined, width: 400, height: 500 }
+            windowBounds: { x: undefined, y: undefined, width: 450, height: 500 }
         };
         this.config = { ...this.defaults };
     }
@@ -26,12 +26,20 @@ class ConfigManager {
     load() {
         try {
             if (fs.existsSync(this.path)) {
-                const loaded = JSON.parse(data);
-                this.config = {
-                    ...this.defaults,
-                    ...loaded,
-                    hotkeys: { ...this.defaults.hotkeys, ...(loaded.hotkeys || {}) }
-                };
+                const parsed = JSON.parse(fs.readFileSync(this.path, 'utf8'));
+
+                // Initialize config with defaults
+                this.config = { ...this.defaults };
+
+                // Merge hotkeys specifically to preserve defaults for unconfigured hotkeys
+                if (parsed.hotkeys) {
+                    this.config.hotkeys = { ...this.defaults.hotkeys, ...parsed.hotkeys };
+                } else {
+                    this.config.hotkeys = this.defaults.hotkeys;
+                }
+
+                // Merge other properties safely, ensuring hotkeys are not overwritten by a shallow merge
+                this.config = { ...this.defaults, ...parsed, hotkeys: this.config.hotkeys };
             }
         } catch (e) {
             console.error('Failed to load config:', e);

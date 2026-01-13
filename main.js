@@ -49,7 +49,7 @@ function createWindow() {
     const bounds = config.windowBounds || { x: undefined, y: undefined };
 
     mainWindow = new BrowserWindow({
-        width: bounds.width || 400,
+        width: bounds.width || 450,
         height: bounds.height || 500,
         x: bounds.x || width - 400,
         y: bounds.y || 50,
