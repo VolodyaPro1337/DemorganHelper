@@ -41,12 +41,9 @@ const addTimerBtn = document.getElementById('add-timer-btn');
 async function init() {
     try {
         settings = await window.electronAPI.loadSettings();
-        console.log('Settings loaded in init:', settings);
         applySettings();
 
         window.electronAPI.onTriggerTimer((id) => {
-            console.log('Renderer received trigger-timer event for id:', id);
-            // alert('Renderer received signal for ID: ' + id);
             startTimer(id);
         });
 
@@ -303,31 +300,25 @@ function updateInfoPanel() {
     grid.innerHTML = html;
 }
 
-function startTimer(id) {
-    // Look up timer in settings.timers
-    // console.log('startTimer called with id:', id);
-    // console.log('Current settings.timers:', settings.timers);
+// Look up timer in settings.timers
+const def = settings.timers.find(t => t.id === id || String(t.id) === String(id));
+if (!def) {
+    console.error('Timer not found for id:', id);
+    return;
+}
 
-    const def = settings.timers.find(t => t.id === id || String(t.id) === String(id));
-    if (!def) {
-        alert('Timer NOT FOUND for id: ' + id);
-        console.error('Timer not found for id:', id);
-        return;
-    }
-    // alert('Starting timer: ' + def.name);
+// If timer exists, remove it first (restart behavior)
+if (timers[id]) {
+    clearInterval(timers[id].interval);
+    if (timers[id].el) timers[id].el.remove();
+    delete timers[id];
+}
 
-    // If timer exists, remove it first (restart behavior)
-    if (timers[id]) {
-        clearInterval(timers[id].interval);
-        if (timers[id].el) timers[id].el.remove();
-        delete timers[id];
-    }
+const el = document.createElement('div');
+el.className = 'timer green';
+el.dataset.id = id;
 
-    const el = document.createElement('div');
-    el.className = 'timer green';
-    el.dataset.id = id;
-
-    el.innerHTML = `
+el.innerHTML = `
         <div class="timer-content">
             <div class="timer-header">
                 <span>${def.name}</span>
@@ -338,40 +329,40 @@ function startTimer(id) {
         </div>
         <div class="progress-bar" style="width: 100%;"></div>
     `;
-    timersContainer.appendChild(el);
+timersContainer.appendChild(el);
 
-    // Add close button handler
-    const closeBtn = el.querySelector('.close-timer');
-    closeBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent drag or other events
-        if (timers[id]) {
-            clearInterval(timers[id].interval);
-            delete timers[id];
-        }
-        el.remove();
-    });
+// Add close button handler
+const closeBtn = el.querySelector('.close-timer');
+closeBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent drag or other events
+    if (timers[id]) {
+        clearInterval(timers[id].interval);
+        delete timers[id];
+    }
+    el.remove();
+});
 
-    let remaining = def.duration;
+let remaining = def.duration;
 
-    const intervalId = setInterval(() => {
-        remaining--;
+const intervalId = setInterval(() => {
+    remaining--;
 
-        el.querySelector('.time').textContent = remaining + 's';
+    el.querySelector('.time').textContent = remaining + 's';
 
-        const percent = (remaining / def.duration) * 100;
-        el.querySelector('.progress-bar').style.width = percent + '%';
-        if (percent > 50) el.className = 'timer green';
-        else if (percent > 20) el.className = 'timer yellow';
-        else el.className = 'timer red';
+    const percent = (remaining / def.duration) * 100;
+    el.querySelector('.progress-bar').style.width = percent + '%';
+    if (percent > 50) el.className = 'timer green';
+    else if (percent > 20) el.className = 'timer yellow';
+    else el.className = 'timer red';
 
-        if (remaining <= 0) {
-            clearInterval(timers[id].interval);
-            delete timers[id];
-            timerFinished(el);
-        }
-    }, 1000);
+    if (remaining <= 0) {
+        clearInterval(timers[id].interval);
+        delete timers[id];
+        timerFinished(el);
+    }
+}, 1000);
 
-    timers[id] = { interval: intervalId, el: el };
+timers[id] = { interval: intervalId, el: el };
 }
 
 function timerFinished(el) {
