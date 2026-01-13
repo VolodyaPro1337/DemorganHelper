@@ -76,6 +76,9 @@ function createWindow() {
 
     setClickThrough(false);
 
+    // mainWindow.webContents.openDevTools({ mode: 'detach' }); // Basic detach
+    mainWindow.webContents.openDevTools();
+
     const saveBounds = () => {
         if (mainWindow) {
             const bounds = mainWindow.getBounds();
@@ -118,6 +121,7 @@ app.whenReady().then(() => {
 
 function registerShortcuts() {
     const config = configManager.get();
+    console.log('Registering shortcuts. Config timers:', config.timers);
     globalShortcut.unregisterAll();
 
     globalShortcut.register(config.hotkeys.toggleClickThrough, () => {
@@ -137,11 +141,20 @@ function registerShortcuts() {
         config.timers.forEach(timer => {
             if (timer.hotkey) {
                 try {
-                    globalShortcut.register(timer.hotkey, () => {
-                        mainWindow && mainWindow.webContents.send('trigger-timer', timer.id);
+                    console.log(`Registering hotkey ${timer.hotkey} for timer ${timer.id}`);
+                    const ret = globalShortcut.register(timer.hotkey, () => {
+                        console.log(`Hotkey ${timer.hotkey} pressed. Sending trigger-timer for id ${timer.id}`);
+                        if (mainWindow) {
+                            mainWindow.webContents.send('trigger-timer', timer.id);
+                        } else {
+                            console.error('mainWindow is undefined, cannot send IPC');
+                        }
                     });
+                    if (!ret) {
+                        console.error(`Registration failed for ${timer.hotkey}`);
+                    }
                 } catch (e) {
-                    console.error(`Failed to register hotkey ${timer.hotkey} for timer ${timer.id}`);
+                    console.error(`Failed to register hotkey ${timer.hotkey} for timer ${timer.id}:`, e);
                 }
             }
         });
