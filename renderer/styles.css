@@ -1,16 +1,11 @@
+/* Default Theme Colors defined in JS now, falling back if needed */
 :root {
     --bg-color: rgba(0, 0, 0, 0.7);
     --text-color: #fff;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --button-bg: rgba(255, 255, 255, 0.1);
     --scale: 1;
-
-
-    --timer-green: #4caf50;
-    --timer-yellow: #ff9800;
-    --timer-red: #f44336;
 }
-
-
-
 
 body {
     background-color: transparent;
@@ -25,7 +20,6 @@ body {
     transform-origin: top left;
 }
 
-
 .compact .timer {
     padding: 2px;
     height: 10px;
@@ -33,8 +27,14 @@ body {
     background: rgba(255, 255, 255, 0.1);
 }
 
-.compact .timer span,
-.compact .timer .hint {
+.compact .timer .timer-content,
+.compact .timer .progress-bar {
+    pointer-events: none;
+}
+
+.compact .timer .timer-header,
+.compact .timer .hint,
+.compact .timer .time {
     display: none !important;
 }
 
@@ -46,9 +46,10 @@ body {
 .info-panel {
     margin-top: 10px;
     padding-top: 8px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid var(--border-color);
     font-size: 0.65rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--text-color);
+    opacity: 0.7;
     background: transparent;
     pointer-events: none;
 }
@@ -79,7 +80,7 @@ body.draggable {
     padding: 10px;
     margin: 5px;
     transition: opacity 0.3s, border 0.3s;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
 }
 
 #app.click-through {
@@ -129,23 +130,61 @@ body.draggable {
 }
 
 .timer {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--button-bg);
     border-radius: 4px;
-    padding: 5px 8px;
+    padding: 8px;
     margin-bottom: 5px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
     font-size: 0.9rem;
     position: relative;
     overflow: hidden;
+    border: 1px solid transparent;
+}
+
+.timer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+.close-timer {
+    background: transparent;
+    border: none;
+    color: var(--text-color);
+    font-weight: bold;
+    font-size: 1.1em;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    opacity: 0.6;
+    z-index: 10;
+}
+
+.close-timer:hover {
+    opacity: 1;
+    color: #ff4444;
+}
+
+.timer .hint {
+    font-size: 0.8em;
+    opacity: 0.7;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.timer .time {
+    align-self: flex-end;
+    font-weight: bold;
 }
 
 .timer .progress-bar {
     position: absolute;
     bottom: 0;
     left: 0;
-    height: 2px;
+    height: 3px;
     background: currentColor;
     width: 100%;
     transition: width 1s linear;

@@ -142,21 +142,37 @@ function applySettings() {
 
     const themes = {
         'default': {
+            '--bg-color': 'rgba(0, 0, 0, 0.7)',
+            '--text-color': '#fff',
+            '--border-color': 'rgba(255, 255, 255, 0.1)',
+            '--button-bg': 'rgba(255, 255, 255, 0.1)',
             '--timer-green': '#4caf50',
             '--timer-yellow': '#ff9800',
             '--timer-red': '#f44336'
         },
         'blue': {
+            '--bg-color': 'rgba(13, 25, 42, 0.9)',
+            '--text-color': '#e3f2fd',
+            '--border-color': 'rgba(33, 150, 243, 0.3)',
+            '--button-bg': 'rgba(33, 150, 243, 0.2)',
             '--timer-green': '#2196f3',
             '--timer-yellow': '#03a9f4',
             '--timer-red': '#00bcd4'
         },
         'purple': {
+            '--bg-color': 'rgba(20, 10, 30, 0.9)',
+            '--text-color': '#f3e5f5',
+            '--border-color': 'rgba(156, 39, 176, 0.3)',
+            '--button-bg': 'rgba(156, 39, 176, 0.2)',
             '--timer-green': '#9c27b0',
             '--timer-yellow': '#ba68c8',
             '--timer-red': '#e1bee7'
         },
         'neon': {
+            '--bg-color': 'rgba(0, 0, 0, 0.85)',
+            '--text-color': '#fff',
+            '--border-color': '#39ff14',
+            '--button-bg': 'rgba(57, 255, 20, 0.15)',
             '--timer-green': '#39ff14',
             '--timer-yellow': '#ff00ff',
             '--timer-red': '#00ffff'
@@ -207,22 +223,45 @@ function updateInfoPanel() {
 }
 
 function startTimer(id) {
-    if (timers[id]) return;
+    // If timer exists, remove it first (restart behavior)
+    if (timers[id]) {
+        clearInterval(timers[id].interval);
+        if (timers[id].el) timers[id].el.remove();
+        delete timers[id];
+    }
 
     const def = TIMER_DEFS[id];
     const el = document.createElement('div');
     el.className = 'timer green';
+    el.dataset.id = id;
+
     el.innerHTML = `
-        <span>${def.name}</span>
-        <span class="hint" style="font-size: 0.8em; opacity: 0.7; display: block;">${def.hint}</span>
-        <span class="time">${def.duration}s</span>
+        <div class="timer-content">
+            <div class="timer-header">
+                <span>${def.name}</span>
+                <button class="close-timer" title="Remove">×</button>
+            </div>
+            <span class="hint">${def.hint}</span>
+            <span class="time">${def.duration}s</span>
+        </div>
         <div class="progress-bar" style="width: 100%;"></div>
     `;
     timersContainer.appendChild(el);
 
+    // Add close button handler
+    const closeBtn = el.querySelector('.close-timer');
+    closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent drag or other events
+        if (timers[id]) {
+            clearInterval(timers[id].interval);
+            delete timers[id];
+        }
+        el.remove();
+    });
+
     let remaining = def.duration;
 
-    timers[id] = setInterval(() => {
+    const intervalId = setInterval(() => {
         remaining--;
 
         el.querySelector('.time').textContent = remaining + 's';
@@ -234,16 +273,22 @@ function startTimer(id) {
         else el.className = 'timer red';
 
         if (remaining <= 0) {
-            clearInterval(timers[id]);
+            clearInterval(timers[id].interval);
             delete timers[id];
             timerFinished(el);
         }
     }, 1000);
+
+    timers[id] = { interval: intervalId, el: el };
 }
 
 function timerFinished(el) {
     el.classList.add('finish-pulse');
     el.querySelector('.time').textContent = 'Готово!';
+
+    // Remove close button when finished
+    const closeBtn = el.querySelector('.close-timer');
+    if (closeBtn) closeBtn.remove();
 
     if (settings.soundsEnabled) {
     }
