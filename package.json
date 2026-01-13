@@ -1,6 +1,6 @@
 {
   "name": "dmghelper",
-  "version": "1.0.3.3",
+  "version": "1.0.4",
   "description": "Overlay helper for Majestic RP",
   "main": "main.js",
   "scripts": {
