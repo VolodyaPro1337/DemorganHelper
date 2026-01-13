@@ -49,9 +49,9 @@ function createWindow() {
     const bounds = config.windowBounds || { x: undefined, y: undefined };
 
     mainWindow = new BrowserWindow({
-        width: bounds.width || 500,
-        height: bounds.height || 600,
-        x: bounds.x || width - 500,
+        width: bounds.width || 400,
+        height: bounds.height || 500,
+        x: bounds.x || width - 400,
         y: bounds.y || 50,
         frame: false,
         transparent: true,
@@ -166,4 +166,10 @@ ipcMain.handle('load-settings', () => {
 ipcMain.on('set-ignore-mouse-events', (event, ignore, options) => {
     const win = BrowserWindow.fromWebContents(event.sender);
     win.setIgnoreMouseEvents(ignore, options);
+});
+
+ipcMain.on('resize-window', (event, width, height) => {
+    if (mainWindow) {
+        mainWindow.setSize(Math.round(width), Math.round(height));
+    }
 });

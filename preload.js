@@ -9,8 +9,9 @@ const TIMERS = {
 contextBridge.exposeInMainWorld('electronAPI', {
     TIMERS: TIMERS,
     toggleIgnoreMouseEvents: (ignore) => ipcRenderer.send('set-ignore-mouse-events', ignore, { forward: true }),
-    saveSettings: (config) => ipcRenderer.invoke('save-settings', config),
+    saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
     loadSettings: () => ipcRenderer.invoke('load-settings'),
-    onTriggerTimer: (callback) => ipcRenderer.on('trigger-timer', (event, id) => callback(id)),
+    resizeWindow: (width, height) => ipcRenderer.send('resize-window', width, height),
+    on: (channel, func) => ipcRenderer.on(channel, (event, ...args) => func(...args)),
     onClickThroughState: (callback) => ipcRenderer.on('click-through-state', (event, state) => callback(state))
 });

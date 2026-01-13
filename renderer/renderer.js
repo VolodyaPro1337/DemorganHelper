@@ -199,6 +199,13 @@ function applySettings() {
         infoPanel.classList.add('hidden');
     }
     updateInfoPanel();
+
+    // Adaptive resizing based on scale
+    const baseWidth = 400;
+    const baseHeight = 500;
+    const newWidth = baseWidth * settings.scale;
+    const newHeight = baseHeight * settings.scale;
+    window.electronAPI.resizeWindow(newWidth, newHeight);
 }
 
 function updateInfoPanel() {
